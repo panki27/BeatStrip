@@ -30,9 +30,9 @@ void setup() {
 
 void loop() {
   unsigned long currentTime = millis();
-  if(currentTime - lastChange >= interval){ // every 5 seconds change colors
-    colorChange();
-  }
+  // if(currentTime - lastChange >= interval){ // every 5 seconds change colors
+  //   colorChange();
+  // }
   centerBarFade();
 }
 
@@ -54,7 +54,7 @@ void centerBar(){
     strip.setPixelColor(i+30, ColorCombos[activeColor]);
     strip.setPixelColor((30-i), ColorCombos[activeColor]);
   }
-  strip.show();  
+ strip.show();
 }
 
 
@@ -69,23 +69,25 @@ void centerBarFade(){  // WIP: Rotating, contrasting colors
   }
 
   if(peak < lastPeak){ 
-    lastPeak = lastPeak -3;
+    lastPeak = lastPeak -2;
   }
 
   else lastPeak = peak;
-  for(int i2 = 0; i2<(30-lastPeak); i2++){ //OFF STATE    TODO: CHANGE TO 1 FOR WITH IF/ELSE 
-    strip.setPixelColor(i2, Wheel(wheelCol));
-    strip.setPixelColor((60-i2), Wheel(wheelCol)); 
+
+  for(int n = 0; n<60; n++){
+
+    if( (n < 30-lastPeak) || (n > (60-n+2*lastPeak)) ){
+      strip.setPixelColor(n, Wheel(wheelCol));
+    }
+    else {
+      strip.setPixelColor(n, Wheel(wheelCol-128));
+    }
   }
-  strip.show();
-    for(int i = 0; i<lastPeak; i++){ // ON State
-    strip.setPixelColor(i+30, Wheel(wheelCol-128));
-    strip.setPixelColor((30-i), Wheel(wheelCol-128));
-  }
+
   if(wheelCol == byte(255)){
      wheelCol = byte(0);
    }
-  strip.show();
+   strip.show();
 }
 
 void colorChange(){
