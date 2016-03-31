@@ -1,4 +1,4 @@
-BeatStrip - Controlling a digital LED strip through an Arduino
+﻿BeatStrip - Controlling a digital LED strip through an Arduino
 
 This project requires the following Hardware:
 	- A WS2812 5050 LED Strip or similar
@@ -15,3 +15,5 @@ Future versions may or may not include:
 	- Rainbow effects
 	- Multiple audio channels (highpass, bandpass)
 	- IR-Remote support
+
+The current stage is adding a second filter for high frequencies, and only have the colour change when a significant value is measured on that.
