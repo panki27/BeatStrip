@@ -5,12 +5,14 @@
 int analogPin = 1;
 int val = 0;
 int peak = 0;
-byte wheelCol = 0;
 int loopCount = 0;
 int activeColor = 0;
 int lastPeak = 0;
+byte wheelCol = byte(160);
 unsigned long lastChange = millis();
+unsigned long lastChangeRainbow = millis();
 const long interval = 5000;
+const long rainbowInterval = 100;
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(60, PIN, NEO_GRB + NEO_KHZ800);
 
 uint32_t ColorCombos[6] = {strip.Color(0, 0, 255), strip.Color(200, 0, 255), //different colors to rotate through
@@ -20,9 +22,9 @@ uint32_t ColorCombos[6] = {strip.Color(0, 0, 255), strip.Color(200, 0, 255), //d
 
 void setup() {
   // put your setup code here, to run once:
-  // Serial.begin(9600); Useful to print debug information, such as peak 
-   strip.begin();
-   strip.show();
+  Serial.begin(9600); // Useful to print debug information, such as peak 
+  strip.begin();
+  strip.show();
    
 }
 
@@ -31,7 +33,7 @@ void loop() {
   if(currentTime - lastChange >= interval){ // every 5 seconds change colors
     colorChange();
   }
-  centerBarRainbow();
+  centerBarFade();
 }
 
 void centerBar(){
@@ -56,30 +58,34 @@ void centerBar(){
 }
 
 
-void centerBarRainbow(){  // WIP: Rotating, contrasting colors
+void centerBarFade(){  // WIP: Rotating, contrasting colors
   val = analogRead(analogPin);
   peak = round(val/20);
+  unsigned long now = millis();
+  
+  if(now - lastChangeRainbow >= rainbowInterval){ // every 0.1 seconds change colors
+    wheelCol++;
+    lastChangeRainbow = now;
+  }
 
-  if(peak < lastPeak){
+  if(peak < lastPeak){ 
     lastPeak = lastPeak -3;
   }
+
   else lastPeak = peak;
-  
-  for(int i2 = 0; i2<(30-lastPeak); i2++){ //OFF STATE 
-    strip.setPixelColor(i2, Wheel(i2+(peak*2)));
-    strip.setPixelColor((60-i2), Wheel(i2+(peak*2))); 
+  for(int i2 = 0; i2<(30-lastPeak); i2++){ //OFF STATE    TODO: CHANGE TO 1 FOR WITH IF/ELSE 
+    strip.setPixelColor(i2, Wheel(wheelCol));
+    strip.setPixelColor((60-i2), Wheel(wheelCol)); 
   }
   strip.show();
     for(int i = 0; i<lastPeak; i++){ // ON State
-    strip.setPixelColor(i+30, ColorCombos[activeColor]);
-    strip.setPixelColor((30-i), ColorCombos[activeColor]);
+    strip.setPixelColor(i+30, Wheel(wheelCol-128));
+    strip.setPixelColor((30-i), Wheel(wheelCol-128));
   }
-  if(wheelCol = 255){
-    wheelCol = 0;
-  }
-  else wheelCol++;
+  if(wheelCol == byte(255)){
+     wheelCol = byte(0);
+   }
   strip.show();
- // delay(5);  
 }
 
 void colorChange(){
